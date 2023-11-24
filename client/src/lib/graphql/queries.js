@@ -17,3 +17,20 @@ export const getHJobs = async () => {
   const {jobs} = await client.request(query); // returns already the data block of a gql response
   return jobs;
 }
+
+export const getHJob = async (id) => {
+  const query = gql`
+    query getHJob($id: ID!){
+      job(id: $id) {
+        id
+        title
+        company {
+          name
+        }
+        date
+        description
+      }
+    }`;
+  const {job} = await client.request(query, {id});
+  return job;
+}
