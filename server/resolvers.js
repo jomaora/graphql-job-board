@@ -11,7 +11,7 @@ export const resolvers = {
 
     Job: {
         date: (job) => {   // getting the document to be used on the attribute resolver
-            return new Date(job.createdAt) 
+            return job.createdAt.slice(0, 'yyyy-mm-dd'.length); 
         },
         company: async (job) => {
             const company = await getCompany(job.companyId)
