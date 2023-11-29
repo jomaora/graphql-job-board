@@ -42,7 +42,12 @@ export const getCompany = async (id) => {
       company(id: $id) {
         id
         name
-        description
+        description,
+        jobs {
+          id
+          title
+          date
+        }
       }
     }`;
   const {company} = await client.request(query, {id});

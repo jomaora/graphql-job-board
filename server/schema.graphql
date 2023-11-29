@@ -5,9 +5,12 @@ type Query {
 }
 
 type Company {
+    """id of the company // comment before the attribute !! otherwise schema error"""
     id: ID!
     name: String
     description: String
+    """not null element in the array and no null for jobs"""
+    jobs: [Job!]!
 }
 
 type Job {
