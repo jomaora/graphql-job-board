@@ -10,6 +10,10 @@ export const resolvers = {
         job: (_root, args) => {
             const {id} = args;
             return getJob(id);
+        },
+        company: (_root, args) => {
+            const {id} = args;
+            return getCompany(id);
         }
     },
 
