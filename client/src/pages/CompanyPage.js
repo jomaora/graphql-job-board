@@ -5,35 +5,48 @@ import JobList from '../components/JobList';
 
 function CompanyPage() {
   const { companyId } = useParams();
-  const [company, setCompany]= useState(null);
-  const [loading, setLoading]= useState(true);
+  
+  const [state, setState] = useState({
+    company: null,
+    loading: true,
+    error: false
+  })
 
   const loadCompany = async (_companyId) => {
-    const data = await getCompany(_companyId);
-    setCompany(data);
-    setLoading(false);
+    setState({...state, loading: true});
+    try {
+      const data = await getCompany(_companyId);
+      const {company} = data;
+      setState({company, loading: false, error: false});
+    } catch (error) {
+      console.log('--->', JSON.stringify(error, null, 2), error.response);
+      // error is composed by response and request. On response there is the array of errors 
+      setState({company: null, loading: false, error: true});
+    }
   }
 
   useEffect(() => {
     loadCompany(companyId);
-  }, [companyId])
+  }, [])
 
-  if (loading) return <p>Loading...</p>
+  if (state.loading) return <p>Loading...</p>
+
+  if (state.error) return <p>Error...</p>
 
   return (
     <div>
       <h1 className="title">
-        {company.name}
+        {state.company.name}
       </h1>
       <div className="box">
-        {company.description}
+        {state.company.description}
       </div>
-      {company.jobs && (
+      {state.company.jobs && (
         <>
           <h2 className='title is-5'>
-            Jobs at {company.name}
+            Jobs at {state.company.name}
           </h2>
-          <JobList jobs={company.jobs} />
+          <JobList jobs={state.company.jobs} />
         </>
       )}
     </div>
