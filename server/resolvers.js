@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { getCompany } from "./db/companies.js";
-import { getJob, getJobs, getJobsByCompanyId } from "./db/jobs.js"
+import { createJob, getJob, getJobs, getJobsByCompanyId } from "./db/jobs.js"
 
 export const resolvers = {
     Query: {
@@ -31,6 +31,19 @@ export const resolvers = {
                 })
             }
             return company;
+        }
+    },
+
+    Mutation: {
+        createJob: async (_root, {input}) => {
+            console.log(input)
+            const {title, description} = input;
+            const job = await createJob({
+                companyId: 'FjcJCHJALA4i', // TODO: to replace
+                title,
+                description
+            });
+            return job;
         }
     },
 

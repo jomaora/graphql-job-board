@@ -4,6 +4,10 @@ type Query {
     company(id: ID!): Company,
 }
 
+type Mutation {
+    createJob(input: CreateJobInput!): Job
+}
+
 type Company {
     """id of the company // comment before the attribute !! otherwise schema error"""
     id: ID!
@@ -20,4 +24,9 @@ type Job {
     description: String
     date: String
     company: Company!
+}
+
+input CreateJobInput {
+    title: String!
+    description: String
 }
