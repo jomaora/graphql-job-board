@@ -35,11 +35,18 @@ export const resolvers = {
     },
 
     Mutation: {
-        createJob: async (_root, {input}) => {
-            console.log(input)
+        createJob: async (_root, {input}, {user}) => {
+            if (!user) {
+                throw new GraphQLError('Unauthorized', {
+                    extensions: {
+                        code: 'UNAUTHORIZED'
+                    }
+                })
+            }
+
             const {title, description} = input;
             const job = await createJob({
-                companyId: 'FjcJCHJALA4i', // TODO: to replace
+                companyId: user.companyId,
                 title,
                 description
             });
