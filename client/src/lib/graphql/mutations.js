@@ -1,4 +1,5 @@
-const { gql, GraphQLClient } = require("graphql-request");
+const { GraphQLClient } = require("graphql-request");
+const { ApolloClient, gql, InMemoryCache } = require("@apollo/client");
 const { getAccessToken } = require("../auth");
 
 const client = new GraphQLClient('http://localhost:9000/graphql', {
@@ -9,6 +10,18 @@ const client = new GraphQLClient('http://localhost:9000/graphql', {
     }
     return {};
   }
+});
+
+const apolloClient = new ApolloClient({
+  uri: 'http://localhost:9000/graphql',
+  headers: () => {
+    const token = getAccessToken();
+    if (token) {
+      return {Authorization: `Bearer ${token}`};
+    }
+    return {};
+  },
+  cache: new InMemoryCache(),
 });
 
 export const createJob = async (title, description) => {

@@ -1,14 +1,16 @@
-const { gql, GraphQLClient } = require("graphql-request");
+const { ApolloClient, gql, InMemoryCache } = require("@apollo/client");
 const { getAccessToken } = require("../auth");
 
-const client = new GraphQLClient('http://localhost:9000/graphql', {
+const apolloClient = new ApolloClient({
+  uri: 'http://localhost:9000/graphql',
   headers: () => {
     const token = getAccessToken();
     if (token) {
       return {Authorization: `Bearer ${token}`};
     }
     return {};
-  }
+  },
+  cache: new InMemoryCache(),
 });
 
 export const getHJobs = async () => {
@@ -23,8 +25,8 @@ export const getHJobs = async () => {
         date
       }
     }`;
-  const {jobs} = await client.request(query); // returns already the data block of a gql response
-  return jobs;
+  const {data}  = await apolloClient.query({query});
+  return data.jobs;
 }
 
 export const getHJob = async (id) => {
@@ -41,11 +43,11 @@ export const getHJob = async (id) => {
         description
       }
     }`;
-  const {job} = await client.request(query, {id});
-  return job;
+  const {data} = await apolloClient.query({query, variables: {id}});
+  return data.job;
 }
 
-export const getCompany = (id) => {
+export const getCompany = async (id) => {
   const query = gql`
     query getCompany($id: ID!){
       company(id: $id) {
@@ -59,5 +61,6 @@ export const getCompany = (id) => {
         }
       }
     }`;
-  return client.request(query, {id});
+  const {data} = await apolloClient.query({query, variables: {id}});
+  return data.company;
 }
