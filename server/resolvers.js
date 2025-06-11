@@ -1,6 +1,14 @@
 import { GraphQLError } from "graphql";
 import { getCompany } from "./db/companies.js";
-import { createJob, getJob, getJobs, getJobsByCompanyId } from "./db/jobs.js"
+import { createJob, deleteJob, getJob, getJobs, getJobsByCompanyId, updateJob } from "./db/jobs.js"
+
+const unauthorizedError = () => {
+    throw new GraphQLError('Unauthorized', {
+        extensions: {
+            code: 'UNAUTHORIZED'
+        }
+    })
+}
 
 export const resolvers = {
     Query: {
@@ -37,11 +45,7 @@ export const resolvers = {
     Mutation: {
         createJob: async (_root, {input}, {user}) => {
             if (!user) {
-                throw new GraphQLError('Unauthorized', {
-                    extensions: {
-                        code: 'UNAUTHORIZED'
-                    }
-                })
+                unauthorizedError();
             }
 
             const {title, description} = input;
@@ -50,6 +54,35 @@ export const resolvers = {
                 title,
                 description
             });
+            return job;
+        },
+        deleteJob: async (_root, {id}, {user}) => {
+            if (!user) {
+                unauthorizedError();
+            }
+            const job = await deleteJob(id, user.companyId);
+            if (!job) {
+                throw new GraphQLError(`Job not found with id ${id}`, {
+                    extensions: {
+                        code: 'NOT_FOUND'
+                    }
+                })
+            }
+            return job;
+        },
+        updateJob: async (_root, {input}, {user}) => {
+            if (!user) {
+                unauthorizedError();
+            }
+            const {id, title, description} = input;
+            const job = await updateJob({id, title, description}, user.companyId);
+            if (!job) {
+                throw new GraphQLError(`Job not found with id ${id}`, {
+                    extensions: {
+                        code: 'NOT_FOUND'
+                    }
+                })
+            }
             return job;
         }
     },
