@@ -16,7 +16,7 @@ function CompanyPage() {
     setState({...state, loading: true});
     try {
       const data = await getCompany(_companyId);
-      const {company} = data;
+      const company = data;
       setState({company, loading: false, error: false});
     } catch (error) {
       console.log('--->', JSON.stringify(error, null, 2), error.response);

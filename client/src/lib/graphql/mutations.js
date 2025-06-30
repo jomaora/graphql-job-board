@@ -33,7 +33,7 @@ export const createJob = async (title, description) => {
       }
     }
   `;
-  const { data } = await apolloClient.mutation(mutation, {variables: {
+  const { data } = await apolloClient.mutate(mutation, {variables: {
     input: {
       title,
       description
