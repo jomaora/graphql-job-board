@@ -1,8 +1,20 @@
-const { ApolloClient, gql, InMemoryCache } = require("@apollo/client");
+const { ApolloClient, gql, InMemoryCache, createHttpLink, concat, ApolloLink } = require("@apollo/client");
 const { getAccessToken } = require("../auth");
 
+const httpLink = new createHttpLink({
+  uri: 'http://localhost:9000/graphql'
+});
+
+const authLink = new ApolloLink((operation, forward) => {
+  const token = getAccessToken();
+  if (token) {
+    operation.setContext({headers: {Authorization: `Bearer ${token}`}}); // rein à voir avec le context côté serveur des resolveurs glq
+  }
+  return forward(operation);
+});
+
 const apolloClient = new ApolloClient({
-  uri: 'http://localhost:9000/graphql',
+  link: concat(authLink, httpLink),
   headers: () => {
     const token = getAccessToken();
     if (token) {
@@ -15,7 +27,7 @@ const apolloClient = new ApolloClient({
 
 export const getHJobs = async () => {
   const query = gql`
-    query {
+    query getHJobs {
       jobs {
         id
         title
