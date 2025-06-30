@@ -15,13 +15,6 @@ const authLink = new ApolloLink((operation, forward) => {
 
 const apolloClient = new ApolloClient({
   link: concat(authLink, httpLink),
-  headers: () => {
-    const token = getAccessToken();
-    if (token) {
-      return {Authorization: `Bearer ${token}`};
-    }
-    return {};
-  },
   cache: new InMemoryCache(),
 });
 
